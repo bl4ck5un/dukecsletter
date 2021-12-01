@@ -1,46 +1,17 @@
 %% Adopted from culetter.sty
 
-%%% culetter.sty - Cornell letterhead style (for letter class)
-%%  1995/10/23 - Convert to LaTeX2e, add Stanford logo
-%% 1999/11/29 - modified to make more general (Emma Pease)
-%% 2000/03/18 - added black and white logo option bw-logo (Christoper Manning)
-%% 2000/09/01 - put in no-logo and britdate options (Christopher Manning)
-%% 2007/02/21 - transmogrified things for use at Cornell, added no-name option (Steve Gaarder)
-%% 2007/02/22 - modified to work with pdflatex and logos in pdf format
-
-% What the user can define:
-% \mailcode{mailcode}
-% \zipcode{zipcode}  only define if not in 94305
-% \address{855 Serra Street\\ Stanford University\\ Stanford, CA 94305-4115}
-%  \address supercedes \location, \department, and \telephone
-% \location{Room 374}  acts as a modifier to the Standard Institutional address
-% \department{Department of XXX}  department name
-% \telephone{phone number}  default is Stanford Directory Infor
-% \name{Sender's name}  required
-
-% Class options:
-% color-logo: print the logo in color
-% bw-logo: print the logo in black and white, not color
-% no-logo: include no logo nor ``Stanford University'' text -- for printing
-%               on real letterhead
-% britdate: format the address day month year, not month day, year
-% no-name: don't put the sender's name in the letterhead
-
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{dukecsletter}[2021/11/30 Duke CS letterhead]
-%% \RequirePackage[dvips]{graphicx}
 \RequirePackage{graphicx}
 
 \def\logo{                      %create Logo and from address
 \null\vspace{-80pt}\begingroup
 
-%% \begin{minipage}{3in}\sulogo \vspace{7pt} \end{minipage} \hfill \begin{minipage}[t]{2.5in} \fromaddress \end{minipage}
 \begin{minipage}{3in}\sulogo \end{minipage}
 
 \vspace{10pt}
 
 \fromaddress
-
 
 \endgroup\par}
 
@@ -50,14 +21,18 @@
 
 \def\sendername{\fromname}
 
-% you might want to set this default depending on your printer
-% \def\sulogo{\includegraphics[height=0.92in]{NCULogoblk}}
+%create default address
+\def\fromaddress{
+{\bf \sendername}, \fromtitle \hfill \faPhone~\telephonenum \\
+\deptname \hfill \faEnvelopeO~\emailaddr \\
+\fromlocation \hfill \faHome~\websiteurl}
+
 
 %+cm
 \DeclareOption{no-name}{\def\sendername{}}
-\DeclareOption{color-logo}{\def\sulogo
+\DeclareOption{widelogo}{\def\sulogo
         {\includegraphics[width=3.4in]{duke-univ-cs-dept-logo-new-white-text-blue-bkgrd-banner.jpeg}}}
-\DeclareOption{vert-logo}{\def\sulogo
+\DeclareOption{squarelogo}{\def\sulogo
         {\includegraphics[height=.92in]{duke-univ-cs-dept-logo-new-vert-white-text-blue-bkgrd.png}}}
 \DeclareOption{no-logo}{\def\logo{}}
 \DeclareOption{britdate}{\renewcommand*{\today}{\number\day\space
@@ -65,6 +40,17 @@
    January\or February\or March\or April\or May\or June\or
    July\or August\or September\or October\or November\or December\fi
    \space\number\year}}
+
+\DeclareOption{rightalignedaddress}{\def\fromaddress{
+        \hfill\begin{tabular}{l}
+                \sendername \\
+                \fromtitle \\
+                \deptname \\
+                \universityname \\
+                \fromlocation \\
+                \emailaddr \\
+                \websiteurl \\
+        \end{tabular}}}
 
 \ProcessOptions
 
@@ -75,6 +61,7 @@
 %-cm
 
 \newcommand*{\department}[1]{\def\deptname{#1}}
+\newcommand*{\university}[1]{\def\universityname{#1}}
 \newcommand*{\mailcode}[1]{\def\mailcodenum{#1}}
 \newcommand*{\zipcode}[1]{\def\zipcodenum{#1}}
 \newcommand*{\proftitle}[1]{\def\fromtitle{#1}}
@@ -96,12 +83,7 @@
 \textwidth 417pt
 \topmargin -6pt
 
-\ifx\fromaddress\@empty         %create default address
-                \def\fromaddress{
-                  {\bf \sendername}, \fromtitle \hfill \faPhone~\telephonenum \\
-                  \deptname \hfill \faEnvelopeO~\emailaddr \\
-                  \fromlocation \hfill \faHome~\websiteurl}
-\fi
+
 
 
 \def\ps@headings{\def\@oddhead{\rm To \ignorespaces\toname \hfil \today
@@ -110,7 +92,7 @@
 \def\@texttop{\vskip 0pt}
 
 \def\opening#1{\logo %Create all up to start of
-  \vspace{10pt}%
+  \vspace{20pt}%
   \@date
   \vskip 1pt
   \thispagestyle{empty}
